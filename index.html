@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UrbAqua Tank Dashboard</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121b2e;
+      --card2:#0f172a;
+      --text:#e6edf7;
+      --muted:#a9b4c7;
+      --accent:#4ea1ff;
+      --accent2:#35d399;
+      --warn:#ffb020;
+      --border:rgba(255,255,255,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(78,161,255,.18), transparent 60%),
+                  radial-gradient(900px 500px at 90% 20%, rgba(53,211,153,.14), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      padding:24px;
+    }
+    .wrap{max-width:1100px;margin:0 auto;}
+    header{
+      display:flex;gap:14px;align-items:flex-start;justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .title h1{margin:0;font-size:22px;letter-spacing:.2px}
+    .title p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
+    .pillbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      padding:8px 10px;border-radius:999px;
+      color:var(--muted);font-size:12px
+    }
+    .pill strong{color:var(--text);font-weight:600}
+    nav{
+      display:flex;gap:10px;align-items:center;
+      margin:14px 0 18px;
+    }
+    .tab{
+      padding:10px 12px;border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      color:var(--muted);
+      cursor:pointer;
+      user-select:none;
+      font-size:13px;
+    }
+    .tab.active{
+      background:rgba(78,161,255,.18);
+      border-color:rgba(78,161,255,.35);
+      color:var(--text);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:16px;
+    }
+    @media (max-width: 920px){
+      .grid{grid-template-columns:1fr}
+      .pillbar{justify-content:flex-start}
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .card h2{
+      margin:0 0 8px;
+      font-size:15px;
+      letter-spacing:.2px;
+    }
+    .sub{color:var(--muted);font-size:12px;margin:0 0 12px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .tank{
+      flex:1 1 280px;
+      background:rgba(0,0,0,.18);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+    }
+    .tankTop{
+      display:flex;justify-content:space-between;align-items:center;margin-bottom:10px
+    }
+    .tankName{
+      font-weight:700;font-size:14px;
+      display:flex;gap:8px;align-items:center;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:99px;background:var(--accent2);
+      box-shadow:0 0 0 4px rgba(53,211,153,.15);
+    }
+    .dot.warn{
+      background:var(--warn);
+      box-shadow:0 0 0 4px rgba(255,176,32,.18);
+    }
+    .metrics{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .metric{
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:10px;
+      background:rgba(255,255,255,.02);
+    }
+    .metric .k{color:var(--muted);font-size:11px;margin-bottom:6px}
+    .metric .v{font-size:16px;font-weight:700}
+    .barWrap{
+      margin-top:10px;
+    }
+    .barLabel{
+      display:flex;justify-content:space-between;align-items:center;
+      color:var(--muted);font-size:12px;margin-bottom:6px
+    }
+    .bar{
+      height:14px;border-radius:999px;background:rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      overflow:hidden;
+    }
+    .bar > div{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, rgba(78,161,255,1), rgba(53,211,153,1));
+      border-radius:999px;
+      transition:width .35s ease;
+    }
+
+    .chart{
+      height:220px;
+      border-radius:14px;
+      border:1px dashed rgba(255,255,255,.15);
+      background:rgba(0,0,0,.18);
+      display:flex;align-items:center;justify-content:center;
+      position:relative;overflow:hidden;
+    }
+    .spark{
+      position:absolute;inset:16px;
+      display:grid;grid-template-columns:repeat(24,1fr);gap:6px;
+      align-items:end;
+      opacity:.9;
+    }
+    .spark div{
+      background:rgba(78,161,255,.45);
+      border:1px solid rgba(78,161,255,.35);
+      border-radius:8px 8px 4px 4px;
+    }
+    .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:12px}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      border-radius:999px;
+    }
+    .badge i{
+      width:10px;height:10px;border-radius:99px;background:rgba(78,161,255,.8);display:inline-block
+    }
+    .badge i.green{background:rgba(53,211,153,.85)}
+    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    button{
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border:1px solid var(--border);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:13px;
+    }
+    button:hover{border-color:rgba(255,255,255,.18)}
+    .hint{color:var(--muted);font-size:12px;margin-top:10px;line-height:1.35}
+    .hide{display:none}
+    footer{margin-top:16px;color:var(--muted);font-size:12px}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>UrbAqua Monitoring Dashboard</h1>
+        <p>
+          Prototype interface for Climate Square 2.0 / Wolvecamp water reuse concept.
+          Live status and historical trends for Tank A (clean) and Tank B (raw).
+        </p>
+      </div>
+      <div class="pillbar">
+        <div class="pill"><strong>Device</strong> urbAqua-proto01</div>
+        <div class="pill"><strong>Update</strong> 10s</div>
+        <div class="pill"><strong>Data</strong> Supabase (planned)</div>
+      </div>
+    </header>
+
+    <nav>
+      <div class="tab active" data-tab="live">Live</div>
+      <div class="tab" data-tab="history">History</div>
+      <div class="tab" data-tab="weather">Weather</div>
+    </nav>
+
+    <!-- LIVE -->
+    <section id="tab-live">
+      <div class="grid">
+        <div class="card">
+          <h2>Tank status</h2>
+          <p class="sub">Current level estimates based on ultrasonic distance measurements.</p>
+
+          <div class="row">
+            <div class="tank" id="tankA">
+              <div class="tankTop">
+                <div class="tankName"><span class="dot" id="dotA"></span>Tank A (Filtered)</div>
+                <div style="color:var(--muted);font-size:12px" id="tsA">Updated: --</div>
+              </div>
+
+              <div class="metrics">
+                <div class="metric">
+                  <div class="k">Fill</div>
+                  <div class="v" id="fillA">-- %</div>
+                </div>
+                <div class="metric">
+                  <div class="k">Distance</div>
+                  <div class="v" id="distA">-- cm</div>
+                </div>
+              </div>
+
+              <div class="barWrap">
+                <div class="barLabel">
+                  <span>Level</span>
+                  <span id="labelA">--</span>
+                </div>
+                <div class="bar"><div id="barA"></div></div>
+              </div>
+
+              <div class="hint">
+                Target: maintain Tank A above 20% by transferring from Tank B when needed.
+              </div>
+            </div>
+
+            <div class="tank" id="tankB">
+              <div class="tankTop">
+                <div class="tankName"><span class="dot" id="dotB"></span>Tank B (Raw)</div>
+                <div style="color:var(--muted);font-size:12px" id="tsB">Updated: --</div>
+              </div>
+
+              <div class="metrics">
+                <div class="metric">
+                  <div class="k">Fill</div>
+                  <div class="v" id="fillB">-- %</div>
+                </div>
+                <div class="metric">
+                  <div class="k">Distance</div>
+                  <div class="v" id="distB">-- cm</div>
+                </div>
+              </div>
+
+              <div class="barWrap">
+                <div class="barLabel">
+                  <span>Level</span>
+                  <span id="labelB">--</span>
+                </div>
+                <div class="bar"><div id="barB"></div></div>
+              </div>
+
+              <div class="hint">
+                Raw input: roof water and surface water. Treatment chain defined by lab results and guidelines.
+              </div>
+            </div>
+          </div>
+
+          <div class="btns">
+            <button id="btnSim">Simulate update</button>
+            <button id="btnAlarm">Toggle low-level warning</button>
+          </div>
+          <div class="hint">
+            Today this demo uses simulated data. Later, values will be loaded from Supabase and updated automatically.
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Control logic summary</h2>
+          <p class="sub">How the prototype behaves (high-level).</p>
+
+          <div class="badge"><i class="green"></i>Tank A below 20% triggers transfer</div>
+          <div class="badge"><i></i>ESP32 reads sensors and logs to database</div>
+          <div class="badge"><i class="green"></i>Pump + valve move water from B to A</div>
+
+          <div class="hint" style="margin-top:12px">
+            Implementation note: In the prototype, the ESP32 measures level in real time and can log readings
+            (tank_id, percent, distance) to a database for dashboards and analysis.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="tab-history" class="hide">
+      <div class="grid">
+        <div class="card">
+          <h2>History (last 24 hours)</h2>
+          <p class="sub">Example trend view. The final version will query Supabase and plot real measurements.</p>
+
+          <div class="chart">
+            <div class="spark" id="sparkA"></div>
+          </div>
+          <div class="legend">
+            <span class="badge"><i class="green"></i>Tank A trend</span>
+            <span class="badge"><i></i>Tank B trend</span>
+          </div>
+          <div class="hint">
+            In the functional version, the History tab will support filtering (tank A/B, time range) and export for reporting.
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Latest readings</h2>
+          <p class="sub">What the dashboard will pull as “live” from the database.</p>
+
+          <div class="metric" style="margin-bottom:10px">
+            <div class="k">Query idea</div>
+            <div class="v" style="font-size:13px;font-weight:600;color:var(--muted)">
+              Latest row per tank (ORDER BY created_at DESC LIMIT 1)
+            </div>
+          </div>
+
+          <div class="metric" style="margin-bottom:10px">
+            <div class="k">History idea</div>
+            <div class="v" style="font-size:13px;font-weight:600;color:var(--muted)">
+              Last 24h (WHERE tank_id='A' AND created_at &gt; now()-interval '24 hours')
+            </div>
+          </div>
+
+          <div class="hint">
+            This keeps the embedded device simple: it only measures and uploads data. The website handles visualization.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WEATHER -->
+    <section id="tab-weather" class="hide">
+      <div class="grid">
+        <div class="card">
+          <h2>Weather (placeholder)</h2>
+          <p class="sub">Planned: fetch Enschede weather using an API to compare rainfall with tank behavior.</p>
+
+          <div class="row">
+            <div class="metric" style="flex:1">
+              <div class="k">Location</div>
+              <div class="v" style="font-size:18px">Enschede</div>
+            </div>
+            <div class="metric" style="flex:1">
+              <div class="k">Rain today</div>
+              <div class="v" style="font-size:18px">-- mm</div>
+            </div>
+            <div class="metric" style="flex:1">
+              <div class="k">Forecast</div>
+              <div class="v" style="font-size:18px">--</div>
+            </div>
+          </div>
+
+          <div class="hint">
+            Weather should be fetched by the website (not the ESP32) to keep the embedded system robust.
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Why weather matters</h2>
+          <p class="sub">Useful for explaining system behavior.</p>
+          <div class="hint">
+            With rainfall and forecast data, we can:
+            <br>1) compare inflow events to tank level changes
+            <br>2) justify storage size assumptions
+            <br>3) explain overflow events and dry-period behavior
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Built for presentation purposes. Data shown is simulated unless connected to a backend.
+    </footer>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab");
+    const sections = {
+      live: document.getElementById("tab-live"),
+      history: document.getElementById("tab-history"),
+      weather: document.getElementById("tab-weather")
+    };
+
+    tabs.forEach(t => t.addEventListener("click", () => {
+      tabs.forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+      Object.values(sections).forEach(s => s.classList.add("hide"));
+      sections[t.dataset.tab].classList.remove("hide");
+    }));
+
+    // --- simulated data ---
+    let A = { fill: 62.4, dist: 4.8 };
+    let B = { fill: 78.1, dist: 2.6 };
+    let warn = false;
+
+    function fmtTime(){
+      const d = new Date();
+      return d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+    }
+
+    function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+    function render(){
+      document.getElementById("fillA").textContent = A.fill.toFixed(1) + " %";
+      document.getElementById("distA").textContent = A.dist.toFixed(1) + " cm";
+      document.getElementById("barA").style.width = clamp(A.fill,0,100) + "%";
+      document.getElementById("labelA").textContent = (A.fill < 20 ? "Low" : "OK");
+
+      document.getElementById("fillB").textContent = B.fill.toFixed(1) + " %";
+      document.getElementById("distB").textContent = B.dist.toFixed(1) + " cm";
+      document.getElementById("barB").style.width = clamp(B.fill,0,100) + "%";
+      document.getElementById("labelB").textContent = (B.fill < 20 ? "Low" : "OK");
+
+      document.getElementById("tsA").textContent = "Updated: " + fmtTime();
+      document.getElementById("tsB").textContent = "Updated: " + fmtTime();
+
+      const dotA = document.getElementById("dotA");
+      const dotB = document.getElementById("dotB");
+      dotA.classList.toggle("warn", warn && A.fill < 20);
+      dotB.classList.toggle("warn", warn && B.fill < 20);
+    }
+
+    function simulate(){
+      // small random changes
+      A.fill = clamp(A.fill + (Math.random()*8-4), 0, 100);
+      B.fill = clamp(B.fill + (Math.random()*8-4), 0, 100);
+      // fake distance inversely correlated
+      A.dist = clamp(12 - (A.fill/10), 0.8, 12);
+      B.dist = clamp(12 - (B.fill/10), 0.8, 12);
+      render();
+    }
+
+    // history placeholder bars
+    function buildSpark(){
+      const spark = document.getElementById("sparkA");
+      spark.innerHTML = "";
+      for(let i=0;i<24;i++){
+        const v = 10 + Math.random()*90;
+        const b = document.createElement("div");
+        b.style.height = (v*1.6) + "px";
+        b.style.background = i%3===0 ? "rgba(53,211,153,.42)" : "rgba(78,161,255,.42)";
+        b.style.borderColor = i%3===0 ? "rgba(53,211,153,.28)" : "rgba(78,161,255,.28)";
+        spark.appendChild(b);
+      }
+    }
+    buildSpark();
+
+    document.getElementById("btnSim").addEventListener("click", simulate);
+    document.getElementById("btnAlarm").addEventListener("click", () => {
+      warn = !warn;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
