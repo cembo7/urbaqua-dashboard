@@ -467,7 +467,7 @@
           <div class="chip"><i class="green"></i><span>Pump + valve move water B → A</span></div>
 
           <div class="hint" style="margin-top:12px">
-            Presentation framing: the embedded device stays simple (measure + upload + control). The dashboard handles
+            The embedded device stays simple (measure + upload + control). The dashboard handles
             visualization, history, and future analytics (weather correlation).
           </div>
         </div>
@@ -479,7 +479,7 @@
       <div class="grid">
         <div class="card">
           <h2>History</h2>
-          <p class="sub">Canvas chart demo (no libraries). In the final version this reads from Supabase.</p>
+          <p class="sub">Simulated demo.</p>
 
           <div class="chartWrap">
             <div class="chartTop">
@@ -507,7 +507,7 @@
 
         <div class="card">
           <h2>Backend query plan</h2>
-          <p class="sub">What you’ll implement next (simple + robust).</p>
+          <p class="sub">Things to implement in the future.</p>
 
           <div class="metric" style="margin-bottom:10px">
             <div class="k">Live</div>
@@ -531,7 +531,7 @@
           </div>
 
           <div class="hint">
-            Your ESP32 stays focused on accurate measurement + control. The website fetches and renders.
+            ESP32 stays focused on accurate measurement + control. The website fetches and renders.
           </div>
         </div>
       </div>
@@ -541,37 +541,66 @@
     <section id="tab-weather" class="hide">
       <div class="grid">
         <div class="card">
-          <h2>Weather (placeholder)</h2>
-          <p class="sub">Planned: fetch Enschede weather using an API to compare rainfall with tank behavior.</p>
+          <h2>Weather data</h2>
+          <p class="sub">Real-time weather from Open-Meteo API (Enschede, Netherlands).</p>
 
           <div class="row">
             <div class="metric" style="flex:1">
               <div class="k">Location</div>
-              <div class="v" style="font-size:18px">Enschede</div>
+              <div class="v" style="font-size:18px" id="weatherLocation">Enschede</div>
             </div>
             <div class="metric" style="flex:1">
-              <div class="k">Rain today</div>
-              <div class="v" style="font-size:18px">-- mm</div>
+              <div class="k">Temperature</div>
+              <div class="v" style="font-size:18px" id="weatherTemp">-- °C</div>
             </div>
             <div class="metric" style="flex:1">
-              <div class="k">Forecast</div>
-              <div class="v" style="font-size:18px">--</div>
+              <div class="k">Conditions</div>
+              <div class="v" style="font-size:18px" id="weatherCondition">--</div>
             </div>
           </div>
 
-          <div class="hint">
-            Weather should be fetched by the website (not the ESP32) to keep the embedded system robust.
+          <div class="row">
+            <div class="metric" style="flex:1">
+              <div class="k">Rain (today)</div>
+              <div class="v" style="font-size:18px" id="weatherRain">-- mm</div>
+            </div>
+            <div class="metric" style="flex:1">
+              <div class="k">Humidity</div>
+              <div class="v" style="font-size:18px" id="weatherHumidity">-- %</div>
+            </div>
+            <div class="metric" style="flex:1">
+              <div class="k">Wind speed</div>
+              <div class="v" style="font-size:18px" id="weatherWind">-- km/h</div>
+            </div>
+          </div>
+
+          <div class="barWrap" style="margin-top:16px">
+            <div class="barLabel">
+              <span>UV Index</span>
+              <span id="weatherUV">--</span>
+            </div>
+            <div class="bar"><div id="weatherUVBar"></div></div>
+          </div>
+
+          <div class="hint" style="margin-top:12px">
+            Data updated every 10 minutes. Last update: <span id="weatherUpdateTime">--</span>
+          </div>
+
+          <div class="btns">
+            <button id="btnRefreshWeather">Refresh weather</button>
           </div>
         </div>
 
         <div class="card">
-          <h2>Why weather matters</h2>
-          <p class="sub">Useful for explaining system behavior.</p>
-          <div class="hint">
-            With rainfall + forecast data, you can:
-            <br>1) correlate inflow events to tank level changes
-            <br>2) justify tank sizing assumptions
-            <br>3) explain overflow events and dry-period behavior
+          <h2>24-hour forecast</h2>
+          <p class="sub">Hourly precipitation and temperature trends.</p>
+
+          <div id="forecastContainer" style="display:flex;gap:10px;overflow-x:auto;padding:10px 0">
+            <div style="text-align:center;min-width:80px;opacity:.5">Loading...</div>
+          </div>
+
+          <div class="hint" style="margin-top:12px">
+            With rainfall data, you can correlate inflow events to tank level changes and better predict tank behavior during weather patterns.
           </div>
         </div>
       </div>
@@ -587,8 +616,7 @@
     <div class="modal">
       <h3>Supabase integration (planned)</h3>
       <p>
-        For the demo, data is simulated. When you’re ready, replace the simulated section with real fetch calls
-        to your <strong>tank_readings</strong> table and render the latest + history.
+        For the demo, data is simulated. To use real data simulation has to switched with real calls to database.
       </p>
       <div class="code" id="codeBox"></div>
       <div class="modalBtns">
@@ -1022,6 +1050,159 @@
     log("OK", "Dashboard started (simulated data)");
     render();
     drawChart();
+
+    // -------- WEATHER DATA (Open-Meteo API) --------
+    // Enschede coordinates: 52.2215°N, 6.8936°E
+    const WEATHER_LAT = 52.2215;
+    const WEATHER_LON = 6.8936;
+    const WEATHER_API_URL = "https://api.open-meteo.com/v1/forecast";
+
+    let weatherData = null;
+    let weatherLastUpdate = null;
+
+    function getWeatherConditionName(code, isDay) {
+      // WMO Weather interpretation codes
+      const weatherCodes = {
+        0: "Clear",
+        1: "Mostly clear",
+        2: "Partly cloudy",
+        3: "Overcast",
+        45: "Foggy",
+        48: "Foggy",
+        51: "Light drizzle",
+        53: "Moderate drizzle",
+        55: "Dense drizzle",
+        61: "Slight rain",
+        63: "Moderate rain",
+        65: "Heavy rain",
+        71: "Slight snow",
+        73: "Moderate snow",
+        75: "Heavy snow",
+        77: "Snow grains",
+        80: "Slight rain showers",
+        81: "Moderate rain showers",
+        82: "Violent rain showers",
+        85: "Slight snow showers",
+        86: "Heavy snow showers",
+        95: "Thunderstorm",
+        96: "Thunderstorm with hail",
+        99: "Thunderstorm with hail"
+      };
+      return weatherCodes[code] || "Unknown";
+    }
+
+    function fetchWeather() {
+      const params = new URLSearchParams({
+        latitude: WEATHER_LAT,
+        longitude: WEATHER_LON,
+        current: "temperature_2m,relative_humidity_2m,weather_code,is_day,precipitation,rain,showers,snowfall,wind_speed_10m,uv_index",
+        hourly: "precipitation,temperature_2m,weather_code",
+        daily: "precipitation_sum,weather_code,temperature_2m_max,temperature_2m_min",
+        timezone: "auto",
+        forecast_days: 1
+      });
+
+      fetch(`${WEATHER_API_URL}?${params}`)
+        .then(res => res.json())
+        .then(data => {
+          weatherData = data;
+          weatherLastUpdate = new Date();
+          renderWeather();
+          log("OK", "Weather data fetched from Open-Meteo");
+        })
+        .catch(err => {
+          console.error("Weather fetch error:", err);
+          log("WARN", "Failed to fetch weather data: " + err.message);
+        });
+    }
+
+    function renderWeather() {
+      if (!weatherData || !weatherData.current) return;
+
+      const current = weatherData.current;
+      const hourly = weatherData.hourly;
+
+      // Current conditions
+      document.getElementById("weatherTemp").textContent = Math.round(current.temperature_2m) + " °C";
+      document.getElementById("weatherCondition").textContent = getWeatherConditionName(current.weather_code, current.is_day);
+      document.getElementById("weatherHumidity").textContent = current.relative_humidity_2m + " %";
+      document.getElementById("weatherWind").textContent = Math.round(current.wind_speed_10m * 10) / 10 + " km/h";
+      document.getElementById("weatherRain").textContent = (current.precipitation || 0) + " mm";
+      document.getElementById("weatherUV").textContent = Math.round(current.uv_index * 10) / 10;
+      
+      // UV Index bar
+      const uvPercent = clamp((current.uv_index / 11) * 100, 0, 100);
+      document.getElementById("weatherUVBar").style.width = uvPercent + "%";
+
+      // Update time
+      const updateTime = weatherLastUpdate.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+      document.getElementById("weatherUpdateTime").textContent = updateTime;
+
+      // Render 24-hour forecast
+      if (hourly && hourly.time) {
+        renderForecast(hourly);
+      }
+    }
+
+    function renderForecast(hourly) {
+      const container = document.getElementById("forecastContainer");
+      container.innerHTML = "";
+
+      const now = new Date();
+      const nextHours = 24;
+
+      for (let i = 0; i < Math.min(nextHours, hourly.time.length); i++) {
+        const timeStr = hourly.time[i];
+        const hour = new Date(timeStr);
+        const temp = hourly.temperature_2m[i];
+        const precip = hourly.precipitation[i];
+        const weatherCode = hourly.weather_code[i];
+
+        const card = document.createElement("div");
+        card.style.cssText = `
+          flex: 0 0 auto;
+          width: 90px;
+          background: rgba(0,0,0,.18);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 10px;
+          text-align: center;
+          font-size: 12px;
+          color: var(--muted);
+        `;
+
+        const isCurrentHour = (i === 0);
+        if (isCurrentHour) {
+          card.style.borderColor = "rgba(78,161,255,.5)";
+          card.style.background = "rgba(78,161,255,.1)";
+        }
+
+        const hourLabel = hour.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+        const tempLabel = Math.round(temp) + "°";
+        const precipLabel = precip > 0 ? precip.toFixed(1) + "mm" : "No rain";
+        const weatherLabel = getWeatherConditionName(weatherCode, true).split(" ")[0]; // short name
+
+        card.innerHTML = `
+          <div style="font-weight:700;color:var(--text);margin-bottom:4px">${hourLabel}</div>
+          <div style="font-size:14px;font-weight:800;color:var(--accent2)">${tempLabel}</div>
+          <div style="margin:4px 0;font-size:11px">${weatherLabel}</div>
+          <div style="color:var(--warn);font-weight:700">${precipLabel}</div>
+        `;
+
+        container.appendChild(card);
+      }
+    }
+
+    // Refresh button
+    document.getElementById("btnRefreshWeather").addEventListener("click", () => {
+      fetchWeather();
+      toast("Fetching latest weather data...");
+    });
+
+    // Initial fetch
+    fetchWeather();
+    // Auto-refresh weather every 10 minutes
+    setInterval(fetchWeather, 10*60*1000);
   </script>
 </body>
 </html>
