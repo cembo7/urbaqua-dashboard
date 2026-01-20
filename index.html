@@ -14,6 +14,7 @@
       --accent:#4ea1ff;
       --accent2:#35d399;
       --warn:#ffb020;
+      --bad:#ff5a7a;
       --border:rgba(255,255,255,.08);
       --shadow: 0 10px 30px rgba(0,0,0,.35);
       --radius:16px;
@@ -28,10 +29,10 @@
       color:var(--text);
       padding:24px;
     }
-    .wrap{max-width:1100px;margin:0 auto;}
+    .wrap{max-width:1150px;margin:0 auto;}
     header{
       display:flex;gap:14px;align-items:flex-start;justify-content:space-between;
-      margin-bottom:18px;
+      margin-bottom:14px;
     }
     .title h1{margin:0;font-size:22px;letter-spacing:.2px}
     .title p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
@@ -43,9 +44,10 @@
       color:var(--muted);font-size:12px
     }
     .pill strong{color:var(--text);font-weight:600}
+
     nav{
       display:flex;gap:10px;align-items:center;
-      margin:14px 0 18px;
+      margin:12px 0 14px;
     }
     .tab{
       padding:10px 12px;border-radius:999px;
@@ -61,15 +63,21 @@
       border-color:rgba(78,161,255,.35);
       color:var(--text);
     }
-    .grid{
+
+    .kpis{
       display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap:16px;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+      margin-bottom:14px;
     }
-    @media (max-width: 920px){
-      .grid{grid-template-columns:1fr}
+    @media (max-width: 980px){
+      .kpis{grid-template-columns: repeat(2, 1fr);}
       .pillbar{justify-content:flex-start}
     }
+    @media (max-width: 560px){
+      .kpis{grid-template-columns: 1fr;}
+    }
+
     .card{
       background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
       border:1px solid var(--border);
@@ -77,12 +85,43 @@
       box-shadow:var(--shadow);
       padding:16px;
     }
-    .card h2{
-      margin:0 0 8px;
-      font-size:15px;
-      letter-spacing:.2px;
+    .kpi{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.18);
+      min-height:84px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
     }
+    .kpi .k{color:var(--muted);font-size:12px}
+    .kpi .v{font-size:18px;font-weight:800;letter-spacing:.2px}
+    .kpi .s{color:var(--muted);font-size:12px}
+    .chip{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      font-size:12px;color:var(--muted);
+      width:fit-content;
+    }
+    .chip i{width:10px;height:10px;border-radius:99px;background:var(--accent2);display:inline-block}
+    .chip.warn i{background:var(--warn)}
+    .chip.bad i{background:var(--bad)}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:16px;
+    }
+    @media (max-width: 920px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    .card h2{margin:0 0 8px;font-size:15px;letter-spacing:.2px}
     .sub{color:var(--muted);font-size:12px;margin:0 0 12px}
+
     .row{display:flex;gap:12px;flex-wrap:wrap}
     .tank{
       flex:1 1 280px;
@@ -95,17 +134,16 @@
       display:flex;justify-content:space-between;align-items:center;margin-bottom:10px
     }
     .tankName{
-      font-weight:700;font-size:14px;
+      font-weight:800;font-size:14px;
       display:flex;gap:8px;align-items:center;
     }
     .dot{
       width:10px;height:10px;border-radius:99px;background:var(--accent2);
       box-shadow:0 0 0 4px rgba(53,211,153,.15);
     }
-    .dot.warn{
-      background:var(--warn);
-      box-shadow:0 0 0 4px rgba(255,176,32,.18);
-    }
+    .dot.warn{background:var(--warn);box-shadow:0 0 0 4px rgba(255,176,32,.18);}
+    .dot.bad{background:var(--bad);box-shadow:0 0 0 4px rgba(255,90,122,.18);}
+
     .metrics{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -119,10 +157,9 @@
       background:rgba(255,255,255,.02);
     }
     .metric .k{color:var(--muted);font-size:11px;margin-bottom:6px}
-    .metric .v{font-size:16px;font-weight:700}
-    .barWrap{
-      margin-top:10px;
-    }
+    .metric .v{font-size:16px;font-weight:800}
+
+    .barWrap{margin-top:10px;}
     .barLabel{
       display:flex;justify-content:space-between;align-items:center;
       color:var(--muted);font-size:12px;margin-bottom:6px
@@ -140,36 +177,6 @@
       transition:width .35s ease;
     }
 
-    .chart{
-      height:220px;
-      border-radius:14px;
-      border:1px dashed rgba(255,255,255,.15);
-      background:rgba(0,0,0,.18);
-      display:flex;align-items:center;justify-content:center;
-      position:relative;overflow:hidden;
-    }
-    .spark{
-      position:absolute;inset:16px;
-      display:grid;grid-template-columns:repeat(24,1fr);gap:6px;
-      align-items:end;
-      opacity:.9;
-    }
-    .spark div{
-      background:rgba(78,161,255,.45);
-      border:1px solid rgba(78,161,255,.35);
-      border-radius:8px 8px 4px 4px;
-    }
-    .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:12px}
-    .badge{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 10px;border:1px solid var(--border);
-      background:rgba(255,255,255,.02);
-      border-radius:999px;
-    }
-    .badge i{
-      width:10px;height:10px;border-radius:99px;background:rgba(78,161,255,.8);display:inline-block
-    }
-    .badge i.green{background:rgba(53,211,153,.85)}
     .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
     button{
       background:rgba(255,255,255,.04);
@@ -181,8 +188,133 @@
       font-size:13px;
     }
     button:hover{border-color:rgba(255,255,255,.18)}
+    .toggle{
+      display:flex;align-items:center;gap:10px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      padding:10px 12px;border-radius:12px;
+      color:var(--muted);font-size:13px;
+      user-select:none;
+    }
+    .switch{
+      width:44px;height:24px;border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      position:relative;
+      flex:0 0 auto;
+    }
+    .knob{
+      width:18px;height:18px;border-radius:99px;
+      position:absolute;top:50%;transform:translateY(-50%);
+      left:3px;background:rgba(255,255,255,.7);
+      transition:left .2s ease, background .2s ease;
+    }
+    .switch.on{background:rgba(53,211,153,.18);border-color:rgba(53,211,153,.35);}
+    .switch.on .knob{left:22px;background:rgba(53,211,153,.95);}
     .hint{color:var(--muted);font-size:12px;margin-top:10px;line-height:1.35}
     .hide{display:none}
+
+    /* Chart */
+    .chartWrap{
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
+      padding:12px;
+    }
+    .chartTop{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .select{
+      appearance:none;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:13px;
+      cursor:pointer;
+    }
+    canvas{width:100%;height:240px;display:block}
+
+    /* Event log */
+    .log{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      overflow:hidden;
+      background:rgba(0,0,0,.18);
+    }
+    .logHeader{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08);
+      color:var(--muted);font-size:12px;
+    }
+    .logBody{max-height:210px;overflow:auto}
+    .logItem{
+      display:flex;gap:10px;align-items:flex-start;
+      padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);
+      font-size:13px;
+    }
+    .logItem:last-child{border-bottom:none}
+    .tag{
+      flex:0 0 auto;
+      font-size:11px;color:var(--muted);
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      border-radius:999px;
+      padding:4px 8px;
+      margin-top:1px;
+    }
+    .tag.ok{color:rgba(53,211,153,.95);border-color:rgba(53,211,153,.28);background:rgba(53,211,153,.08)}
+    .tag.warn{color:rgba(255,176,32,.95);border-color:rgba(255,176,32,.25);background:rgba(255,176,32,.08)}
+    .tag.bad{color:rgba(255,90,122,.95);border-color:rgba(255,90,122,.22);background:rgba(255,90,122,.08)}
+
+    /* Modal */
+    .overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.55);
+      display:none;align-items:center;justify-content:center;
+      padding:18px;
+    }
+    .modal{
+      width:min(560px, 100%);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(18,27,46,.95), rgba(10,14,24,.92));
+      box-shadow: 0 18px 50px rgba(0,0,0,.55);
+      padding:16px;
+    }
+    .modal h3{margin:0 0 6px;font-size:16px}
+    .modal p{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.35}
+    .code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.28);
+      border-radius:14px;
+      padding:12px;
+      color:rgba(230,237,247,.9);
+      overflow:auto;
+      white-space:pre;
+    }
+    .modalBtns{display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+    .primary{
+      border-color:rgba(78,161,255,.35);
+      background:rgba(78,161,255,.14);
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed;right:18px;bottom:18px;
+      background:rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.14);
+      color:var(--text);
+      padding:12px 14px;border-radius:14px;
+      max-width:360px;
+      box-shadow:0 16px 40px rgba(0,0,0,.5);
+      display:none;
+      font-size:13px;
+    }
     footer{margin-top:16px;color:var(--muted);font-size:12px}
   </style>
 </head>
@@ -193,16 +325,39 @@
       <div class="title">
         <h1>UrbAqua Monitoring Dashboard</h1>
         <p>
-          Prototype interface for Climate Square 2.0 / Wolvecamp water reuse concept.
-          Live status and historical trends for Tank A (clean) and Tank B (raw).
+          Climate Square 2.0 prototype interface — live status + historical trends for Tank A (clean) and Tank B (raw).
         </p>
       </div>
       <div class="pillbar">
         <div class="pill"><strong>Device</strong> urbAqua-proto01</div>
-        <div class="pill"><strong>Update</strong> 10s</div>
-        <div class="pill"><strong>Data</strong> Supabase (planned)</div>
+        <div class="pill"><strong>Refresh</strong> <span id="pillRefresh">10s</span></div>
+        <div class="pill"><strong>Backend</strong> <span id="pillBackend">Simulated</span></div>
       </div>
     </header>
+
+    <!-- KPI ROW -->
+    <section class="kpis">
+      <div class="kpi">
+        <div class="k">System state</div>
+        <div class="v" id="kpiState">Stable</div>
+        <div class="chip" id="chipState"><i></i><span id="chipStateTxt">OK</span></div>
+      </div>
+      <div class="kpi">
+        <div class="k">Transfer logic</div>
+        <div class="v" id="kpiLogic">Armed</div>
+        <div class="s">Tank A &lt; 20% ⇒ transfer B→A</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Actuators</div>
+        <div class="v" id="kpiAct">Idle</div>
+        <div class="s" id="kpiActSub">Pump OFF • Valve CLOSED</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Last update</div>
+        <div class="v" id="kpiUpdate">--:--:--</div>
+        <div class="s" id="kpiSource">Source: simulated</div>
+      </div>
+    </section>
 
     <nav>
       <div class="tab active" data-tab="live">Live</div>
@@ -274,17 +429,30 @@
               </div>
 
               <div class="hint">
-                Raw input: roof water and surface water. Treatment chain defined by lab results and guidelines.
+                Raw input: roof water and surface runoff. Treatment chain defined by lab results and guidelines.
               </div>
             </div>
           </div>
 
           <div class="btns">
             <button id="btnSim">Simulate update</button>
-            <button id="btnAlarm">Toggle low-level warning</button>
+            <div class="toggle" id="autoWrap">
+              <div class="switch on" id="autoSwitch"><div class="knob"></div></div>
+              Auto-refresh (10s)
+            </div>
+            <button id="btnConnect" class="primary">Connect Supabase (planned)</button>
           </div>
           <div class="hint">
-            Today this demo uses simulated data. Later, values will be loaded from Supabase and updated automatically.
+            Demo uses simulated data + realistic UX. Supabase integration can replace <em>simulate()</em> with real fetch calls.
+          </div>
+
+          <!-- Event Log -->
+          <div class="log">
+            <div class="logHeader">
+              <div>System events</div>
+              <div id="logHint">Last 10 events</div>
+            </div>
+            <div class="logBody" id="logBody"></div>
           </div>
         </div>
 
@@ -292,13 +460,15 @@
           <h2>Control logic summary</h2>
           <p class="sub">How the prototype behaves (high-level).</p>
 
-          <div class="badge"><i class="green"></i>Tank A below 20% triggers transfer</div>
-          <div class="badge"><i></i>ESP32 reads sensors and logs to database</div>
-          <div class="badge"><i class="green"></i>Pump + valve move water from B to A</div>
+          <div class="chip"><i></i><span>ESP32 reads sensors & logs</span></div>
+          <div style="height:10px"></div>
+          <div class="chip"><i style="background:rgba(78,161,255,.9)"></i><span>Tank A low → triggers transfer</span></div>
+          <div style="height:10px"></div>
+          <div class="chip"><i class="green"></i><span>Pump + valve move water B → A</span></div>
 
           <div class="hint" style="margin-top:12px">
-            Implementation note: In the prototype, the ESP32 measures level in real time and can log readings
-            (tank_id, percent, distance) to a database for dashboards and analysis.
+            Presentation framing: the embedded device stays simple (measure + upload + control). The dashboard handles
+            visualization, history, and future analytics (weather correlation).
           </div>
         </div>
       </div>
@@ -308,41 +478,60 @@
     <section id="tab-history" class="hide">
       <div class="grid">
         <div class="card">
-          <h2>History (last 24 hours)</h2>
-          <p class="sub">Example trend view. The final version will query Supabase and plot real measurements.</p>
+          <h2>History</h2>
+          <p class="sub">Canvas chart demo (no libraries). In the final version this reads from Supabase.</p>
 
-          <div class="chart">
-            <div class="spark" id="sparkA"></div>
-          </div>
-          <div class="legend">
-            <span class="badge"><i class="green"></i>Tank A trend</span>
-            <span class="badge"><i></i>Tank B trend</span>
-          </div>
-          <div class="hint">
-            In the functional version, the History tab will support filtering (tank A/B, time range) and export for reporting.
+          <div class="chartWrap">
+            <div class="chartTop">
+              <div class="chip"><i></i><span id="histLabel">Last 24 hours (simulated)</span></div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <select class="select" id="histTank">
+                  <option value="A">Tank A (Filtered)</option>
+                  <option value="B">Tank B (Raw)</option>
+                  <option value="AB">Both (overlay)</option>
+                </select>
+                <select class="select" id="histRange">
+                  <option value="24">24h</option>
+                  <option value="6">6h</option>
+                  <option value="1">1h</option>
+                </select>
+              </div>
+            </div>
+
+            <canvas id="chart" width="980" height="260"></canvas>
+            <div class="hint" style="margin-top:10px">
+              Future: filter by time range + export CSV + compare against rainfall events.
+            </div>
           </div>
         </div>
 
         <div class="card">
-          <h2>Latest readings</h2>
-          <p class="sub">What the dashboard will pull as “live” from the database.</p>
+          <h2>Backend query plan</h2>
+          <p class="sub">What you’ll implement next (simple + robust).</p>
 
           <div class="metric" style="margin-bottom:10px">
-            <div class="k">Query idea</div>
-            <div class="v" style="font-size:13px;font-weight:600;color:var(--muted)">
-              Latest row per tank (ORDER BY created_at DESC LIMIT 1)
+            <div class="k">Live</div>
+            <div class="v" style="font-size:13px;font-weight:700;color:var(--muted)">
+              Latest row per tank (order by created_at desc, limit 1)
             </div>
           </div>
 
           <div class="metric" style="margin-bottom:10px">
-            <div class="k">History idea</div>
-            <div class="v" style="font-size:13px;font-weight:600;color:var(--muted)">
-              Last 24h (WHERE tank_id='A' AND created_at &gt; now()-interval '24 hours')
+            <div class="k">History</div>
+            <div class="v" style="font-size:13px;font-weight:700;color:var(--muted)">
+              Rows by tank + time window (created_at &gt; now() - interval)
+            </div>
+          </div>
+
+          <div class="metric" style="margin-bottom:10px">
+            <div class="k">Optional</div>
+            <div class="v" style="font-size:13px;font-weight:700;color:var(--muted)">
+              “Derived” table for daily aggregates (min/max/avg)
             </div>
           </div>
 
           <div class="hint">
-            This keeps the embedded device simple: it only measures and uploads data. The website handles visualization.
+            Your ESP32 stays focused on accurate measurement + control. The website fetches and renders.
           </div>
         </div>
       </div>
@@ -379,9 +568,9 @@
           <h2>Why weather matters</h2>
           <p class="sub">Useful for explaining system behavior.</p>
           <div class="hint">
-            With rainfall and forecast data, we can:
-            <br>1) compare inflow events to tank level changes
-            <br>2) justify storage size assumptions
+            With rainfall + forecast data, you can:
+            <br>1) correlate inflow events to tank level changes
+            <br>2) justify tank sizing assumptions
             <br>3) explain overflow events and dry-period behavior
           </div>
         </div>
@@ -393,85 +582,446 @@
     </footer>
   </div>
 
+  <!-- MODAL -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h3>Supabase integration (planned)</h3>
+      <p>
+        For the demo, data is simulated. When you’re ready, replace the simulated section with real fetch calls
+        to your <strong>tank_readings</strong> table and render the latest + history.
+      </p>
+      <div class="code" id="codeBox"></div>
+      <div class="modalBtns">
+        <button id="btnClose">Close</button>
+        <button class="primary" id="btnFakeConnect">Mark as “Connected” (demo)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
   <script>
+    // ---------------- Tabs ----------------
     const tabs = document.querySelectorAll(".tab");
     const sections = {
       live: document.getElementById("tab-live"),
       history: document.getElementById("tab-history"),
       weather: document.getElementById("tab-weather")
     };
-
     tabs.forEach(t => t.addEventListener("click", () => {
       tabs.forEach(x => x.classList.remove("active"));
       t.classList.add("active");
       Object.values(sections).forEach(s => s.classList.add("hide"));
       sections[t.dataset.tab].classList.remove("hide");
+      if(t.dataset.tab === "history") drawChart();
     }));
 
-    // --- simulated data ---
+    // ---------------- State ----------------
+    const THRESH_LOW = 20;
+
+    let backendMode = "simulated";     // simulated | connected-demo
+    let refreshMs = 10000;
+    let auto = true;
+
     let A = { fill: 62.4, dist: 4.8 };
     let B = { fill: 78.1, dist: 2.6 };
-    let warn = false;
 
-    function fmtTime(){
-      const d = new Date();
+    let pumpOn = false;
+    let valveOpen = false;
+
+    const history = {
+      A: [],
+      B: []
+    };
+
+    // Pre-fill history with realistic curves
+    function seedHistory(){
+      history.A = [];
+      history.B = [];
+      const now = Date.now();
+      // 24h window, 5-min points => 288 points
+      const points = 288;
+      let a = 58 + Math.random()*10;
+      let b = 75 + Math.random()*12;
+
+      for(let i=points-1;i>=0;i--){
+        const t = now - i*5*60*1000;
+
+        // mild drift
+        a += (Math.random()*1.6 - 0.8);
+        b += (Math.random()*1.6 - 0.8);
+
+        // occasional "use event" (A drops)
+        if(Math.random() < 0.035) a -= (6 + Math.random()*8);
+
+        // occasional "rain event" (B rises)
+        if(Math.random() < 0.03) b += (6 + Math.random()*10);
+
+        // clamp
+        a = clamp(a, 0, 100);
+        b = clamp(b, 0, 100);
+
+        history.A.push({ t, v: a });
+        history.B.push({ t, v: b });
+      }
+    }
+    seedHistory();
+
+    // ---------------- Helpers ----------------
+    function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+    function fmtTime(d=new Date()){
       return d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
     }
+    function fmtShortTime(ms){
+      const d = new Date(ms);
+      return d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+    }
 
-    function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+    // Toast
+    let toastTimer = null;
+    function toast(msg){
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.style.display = "block";
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=> el.style.display="none", 2200);
+    }
+
+    // Event log
+    const logBody = document.getElementById("logBody");
+    const events = [];
+    function log(tag, msg){
+      events.unshift({ time: fmtTime(), tag, msg });
+      while(events.length > 10) events.pop();
+      renderLog();
+    }
+    function renderLog(){
+      logBody.innerHTML = "";
+      events.forEach(e=>{
+        const row = document.createElement("div");
+        row.className = "logItem";
+        const tg = document.createElement("div");
+        tg.className = "tag " + (tagClass(e.tag));
+        tg.textContent = e.tag;
+        const text = document.createElement("div");
+        text.innerHTML = `<div style="font-weight:700">${e.time}</div><div style="color:var(--muted)">${e.msg}</div>`;
+        row.appendChild(tg);
+        row.appendChild(text);
+        logBody.appendChild(row);
+      });
+    }
+    function tagClass(tag){
+      if(tag === "OK") return "ok";
+      if(tag === "WARN") return "warn";
+      if(tag === "ALERT") return "bad";
+      return "";
+    }
+
+    // ---------------- Render Live ----------------
+    function statusLabel(fill){
+      if(fill < THRESH_LOW) return "Low";
+      return "OK";
+    }
+
+    function setKpis(){
+      const anyLow = (A.fill < THRESH_LOW) || (B.fill < THRESH_LOW);
+
+      const stateEl = document.getElementById("kpiState");
+      const chip = document.getElementById("chipState");
+      const chipTxt = document.getElementById("chipStateTxt");
+
+      if(anyLow){
+        stateEl.textContent = "Attention";
+        chip.className = "chip warn";
+        chipTxt.textContent = "LOW LEVEL";
+      } else {
+        stateEl.textContent = "Stable";
+        chip.className = "chip";
+        chipTxt.textContent = "OK";
+      }
+
+      document.getElementById("kpiAct").textContent = (pumpOn || valveOpen) ? "Transferring" : "Idle";
+      document.getElementById("kpiActSub").textContent =
+        `${pumpOn ? "Pump ON" : "Pump OFF"} • ${valveOpen ? "Valve OPEN" : "Valve CLOSED"}`;
+
+      document.getElementById("kpiUpdate").textContent = fmtTime();
+      document.getElementById("kpiSource").textContent = `Source: ${backendMode === "simulated" ? "simulated" : "supabase (demo)"}`;
+    }
 
     function render(){
+      // A
       document.getElementById("fillA").textContent = A.fill.toFixed(1) + " %";
       document.getElementById("distA").textContent = A.dist.toFixed(1) + " cm";
       document.getElementById("barA").style.width = clamp(A.fill,0,100) + "%";
-      document.getElementById("labelA").textContent = (A.fill < 20 ? "Low" : "OK");
+      document.getElementById("labelA").textContent = statusLabel(A.fill);
 
+      // B
       document.getElementById("fillB").textContent = B.fill.toFixed(1) + " %";
       document.getElementById("distB").textContent = B.dist.toFixed(1) + " cm";
       document.getElementById("barB").style.width = clamp(B.fill,0,100) + "%";
-      document.getElementById("labelB").textContent = (B.fill < 20 ? "Low" : "OK");
+      document.getElementById("labelB").textContent = statusLabel(B.fill);
 
+      // timestamps
       document.getElementById("tsA").textContent = "Updated: " + fmtTime();
       document.getElementById("tsB").textContent = "Updated: " + fmtTime();
 
+      // dots
       const dotA = document.getElementById("dotA");
       const dotB = document.getElementById("dotB");
-      dotA.classList.toggle("warn", warn && A.fill < 20);
-      dotB.classList.toggle("warn", warn && B.fill < 20);
+      dotA.classList.toggle("warn", A.fill < THRESH_LOW);
+      dotB.classList.toggle("warn", B.fill < THRESH_LOW);
+
+      setKpis();
+    }
+
+    // ---------------- Logic Simulation ----------------
+    function applyTransferLogic(){
+      // If A < 20% and B has enough water, start transfer
+      if(A.fill < THRESH_LOW && B.fill > 5){
+        if(!pumpOn){
+          pumpOn = true; valveOpen = true;
+          log("WARN", "Tank A below 20% → starting transfer B → A");
+        }
+      } else {
+        if(pumpOn){
+          pumpOn = false; valveOpen = false;
+          log("OK", "Transfer stopped (Tank A recovered or Tank B insufficient)");
+        }
+      }
+
+      // while transferring, A rises, B drops
+      if(pumpOn){
+        const flow = 1.6 + Math.random()*1.2; // % per tick
+        A.fill = clamp(A.fill + flow, 0, 100);
+        B.fill = clamp(B.fill - (flow * (0.9 + Math.random()*0.3)), 0, 100);
+      }
+    }
+
+    function updateDistances(){
+      // fake distance inversely correlated (tune for your container geometry)
+      A.dist = clamp(12 - (A.fill/10), 0.8, 12);
+      B.dist = clamp(12 - (B.fill/10), 0.8, 12);
+    }
+
+    function pushHistoryPoint(){
+      const t = Date.now();
+      history.A.push({ t, v: A.fill });
+      history.B.push({ t, v: B.fill });
+
+      // keep roughly last 24h at 5-min resolution (but we add faster in demo, so cap)
+      while(history.A.length > 400) history.A.shift();
+      while(history.B.length > 400) history.B.shift();
     }
 
     function simulate(){
-      // small random changes
-      A.fill = clamp(A.fill + (Math.random()*8-4), 0, 100);
-      B.fill = clamp(B.fill + (Math.random()*8-4), 0, 100);
-      // fake distance inversely correlated
-      A.dist = clamp(12 - (A.fill/10), 0.8, 12);
-      B.dist = clamp(12 - (B.fill/10), 0.8, 12);
+      // natural drift
+      A.fill = clamp(A.fill + (Math.random()*2.0 - 1.2), 0, 100);
+      B.fill = clamp(B.fill + (Math.random()*2.0 - 1.0), 0, 100);
+
+      // occasional "usage" event for A
+      if(Math.random() < 0.12 && !pumpOn){
+        const drop = 2 + Math.random()*5;
+        A.fill = clamp(A.fill - drop, 0, 100);
+        log("OK", `Consumption event: Tank A decreased by ${drop.toFixed(1)}%`);
+      }
+
+      // occasional "rain event" for B
+      if(Math.random() < 0.10){
+        const rise = 2 + Math.random()*6;
+        B.fill = clamp(B.fill + rise, 0, 100);
+        log("OK", `Inflow event: Tank B increased by ${rise.toFixed(1)}%`);
+      }
+
+      applyTransferLogic();
+      updateDistances();
+      pushHistoryPoint();
+
       render();
+      drawChartIfVisible();
     }
 
-    // history placeholder bars
-    function buildSpark(){
-      const spark = document.getElementById("sparkA");
-      spark.innerHTML = "";
-      for(let i=0;i<24;i++){
-        const v = 10 + Math.random()*90;
-        const b = document.createElement("div");
-        b.style.height = (v*1.6) + "px";
-        b.style.background = i%3===0 ? "rgba(53,211,153,.42)" : "rgba(78,161,255,.42)";
-        b.style.borderColor = i%3===0 ? "rgba(53,211,153,.28)" : "rgba(78,161,255,.28)";
-        spark.appendChild(b);
+    // ---------------- History Chart (Canvas) ----------------
+    const canvas = document.getElementById("chart");
+    const ctx = canvas.getContext("2d");
+
+    function drawChartIfVisible(){
+      const historyTabVisible = !document.getElementById("tab-history").classList.contains("hide");
+      if(historyTabVisible) drawChart();
+    }
+
+    function getRangeHours(){
+      return parseInt(document.getElementById("histRange").value, 10);
+    }
+    function getTankMode(){
+      return document.getElementById("histTank").value;
+    }
+
+    function sliceByHours(arr, hours){
+      const cutoff = Date.now() - hours*60*60*1000;
+      const out = arr.filter(p => p.t >= cutoff);
+      return out.length ? out : arr.slice(-Math.min(arr.length, 60));
+    }
+
+    function drawLine(points, color){
+      // color is optional here; we'll use alpha via default strokeStyle if not provided
+      if(points.length < 2) return;
+
+      const w = canvas.width, h = canvas.height;
+      const pad = 34;
+      const left = pad, right = w - pad, top = 18, bottom = h - 28;
+
+      const minT = points[0].t;
+      const maxT = points[points.length - 1].t;
+
+      ctx.beginPath();
+      for(let i=0;i<points.length;i++){
+        const x = left + ( (points[i].t - minT) / (maxT - minT || 1) ) * (right - left);
+        const y = bottom - ( (points[i].v) / 100 ) * (bottom - top);
+        if(i===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+      }
+      ctx.lineWidth = 2;
+      if(color) ctx.strokeStyle = color;
+      ctx.stroke();
+    }
+
+    function drawChart(){
+      const hours = getRangeHours();
+      const mode = getTankMode();
+
+      document.getElementById("histLabel").textContent = `Last ${hours} hour${hours===1?"":"s"} (simulated)`;
+
+      // prepare slices
+      const aPts = sliceByHours(history.A, hours);
+      const bPts = sliceByHours(history.B, hours);
+
+      // background
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "rgba(0,0,0,.18)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      const w = canvas.width, h = canvas.height;
+      const pad = 34;
+      const left = pad, right = w - pad, top = 18, bottom = h - 28;
+
+      // grid
+      ctx.strokeStyle = "rgba(255,255,255,.08)";
+      ctx.lineWidth = 1;
+
+      for(let i=0;i<=4;i++){
+        const y = top + i*(bottom-top)/4;
+        ctx.beginPath();
+        ctx.moveTo(left,y);
+        ctx.lineTo(right,y);
+        ctx.stroke();
+      }
+
+      // y labels
+      ctx.fillStyle = "rgba(233,238,247,.65)";
+      ctx.font = "12px ui-sans-serif, system-ui";
+      [100,75,50,25,0].forEach((v,idx)=>{
+        const y = top + idx*(bottom-top)/4 + 4;
+        ctx.fillText(v + "%", 6, y);
+      });
+
+      // x labels (start/end)
+      const base = (mode === "B") ? bPts : aPts; // whichever for time range
+      const startT = base[0]?.t ?? Date.now();
+      const endT = base[base.length-1]?.t ?? Date.now();
+      ctx.fillText(fmtShortTime(startT), left, h - 8);
+      const endTxt = fmtShortTime(endT);
+      const endW = ctx.measureText(endTxt).width;
+      ctx.fillText(endTxt, right - endW, h - 8);
+
+      // threshold line 20%
+      const y20 = bottom - (20/100)*(bottom-top);
+      ctx.strokeStyle = "rgba(255,176,32,.25)";
+      ctx.setLineDash([6,6]);
+      ctx.beginPath();
+      ctx.moveTo(left,y20); ctx.lineTo(right,y20); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "rgba(255,176,32,.75)";
+      ctx.fillText("20% threshold", left + 8, y20 - 8);
+
+      // lines
+      // Use subtle different strokes without hardcoding palette beyond alpha
+      if(mode === "A"){
+        ctx.strokeStyle = "rgba(53,211,153,.85)";
+        drawLine(aPts);
+      } else if(mode === "B"){
+        ctx.strokeStyle = "rgba(78,161,255,.85)";
+        drawLine(bPts);
+      } else {
+        ctx.strokeStyle = "rgba(53,211,153,.85)";
+        drawLine(aPts);
+        ctx.strokeStyle = "rgba(78,161,255,.75)";
+        drawLine(bPts);
       }
     }
-    buildSpark();
 
-    document.getElementById("btnSim").addEventListener("click", simulate);
-    document.getElementById("btnAlarm").addEventListener("click", () => {
-      warn = !warn;
+    document.getElementById("histTank").addEventListener("change", drawChart);
+    document.getElementById("histRange").addEventListener("change", drawChart);
+
+    // ---------------- Modal (Supabase planned) ----------------
+    const overlay = document.getElementById("overlay");
+    const codeBox = document.getElementById("codeBox");
+
+    const plannedCode =
+`// Example (later):
+// 1) Latest reading per tank
+// GET /rest/v1/tank_readings?select=*&tank_id=eq.A&order=created_at.desc&limit=1
+// GET /rest/v1/tank_readings?select=*&tank_id=eq.B&order=created_at.desc&limit=1
+//
+// 2) History window (e.g. last 24h)
+// GET /rest/v1/tank_readings?select=created_at,fill_percent&tank_id=eq.A&created_at=gt.${"${ISO_24H_AGO}"}&order=created_at.asc
+//
+// In JS you’d use fetch() with:
+// headers: { apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY }`;
+
+    document.getElementById("btnConnect").addEventListener("click", ()=>{
+      codeBox.textContent = plannedCode;
+      overlay.style.display = "flex";
+    });
+    document.getElementById("btnClose").addEventListener("click", ()=>{
+      overlay.style.display = "none";
+    });
+    overlay.addEventListener("click", (e)=>{
+      if(e.target === overlay) overlay.style.display = "none";
+    });
+
+    document.getElementById("btnFakeConnect").addEventListener("click", ()=>{
+      backendMode = "connected-demo";
+      document.getElementById("pillBackend").textContent = "Supabase (demo)";
+      toast("Demo mode: marked as connected to Supabase");
+      log("OK", "Backend set to Supabase (demo mode for presentation)");
+      overlay.style.display = "none";
       render();
     });
 
+    // ---------------- Controls ----------------
+    document.getElementById("btnSim").addEventListener("click", ()=>{
+      simulate();
+      toast("Simulated new readings");
+    });
+
+    const autoSwitch = document.getElementById("autoSwitch");
+    const autoWrap = document.getElementById("autoWrap");
+    function setAuto(on){
+      auto = on;
+      autoSwitch.classList.toggle("on", auto);
+      document.getElementById("pillRefresh").textContent = auto ? (refreshMs/1000 + "s") : "Paused";
+      toast(auto ? "Auto-refresh enabled" : "Auto-refresh paused");
+    }
+    autoWrap.addEventListener("click", ()=> setAuto(!auto));
+
+    // ---------------- Timer ----------------
+    let timer = setInterval(()=> { if(auto) simulate(); }, refreshMs);
+
+    // Init
+    log("OK", "Dashboard started (simulated data)");
     render();
+    drawChart();
   </script>
 </body>
 </html>
