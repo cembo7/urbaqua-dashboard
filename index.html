@@ -595,8 +595,8 @@
           <h2>24-hour forecast</h2>
           <p class="sub">Hourly precipitation and temperature trends.</p>
 
-          <div id="forecastContainer" style="display:flex;gap:10px;overflow-x:auto;padding:10px 0">
-            <div style="text-align:center;min-width:80px;opacity:.5">Loading...</div>
+          <div id="forecastContainer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:10px;padding:10px 0">
+            <div style="text-align:center;min-width:70px;opacity:.5">Loading...</div>
           </div>
 
           <div class="hint" style="margin-top:12px">
@@ -1160,14 +1160,12 @@
 
         const card = document.createElement("div");
         card.style.cssText = `
-          flex: 0 0 auto;
-          width: 90px;
           background: rgba(0,0,0,.18);
           border: 1px solid var(--border);
           border-radius: 12px;
-          padding: 10px;
+          padding: 8px;
           text-align: center;
-          font-size: 12px;
+          font-size: 11px;
           color: var(--muted);
         `;
 
@@ -1179,14 +1177,14 @@
 
         const hourLabel = hour.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
         const tempLabel = Math.round(temp) + "°";
-        const precipLabel = precip > 0 ? precip.toFixed(1) + "mm" : "No rain";
+        const precipLabel = precip > 0 ? precip.toFixed(1) + "mm" : "-";
         const weatherLabel = getWeatherConditionName(weatherCode, true).split(" ")[0]; // short name
 
         card.innerHTML = `
-          <div style="font-weight:700;color:var(--text);margin-bottom:4px">${hourLabel}</div>
-          <div style="font-size:14px;font-weight:800;color:var(--accent2)">${tempLabel}</div>
-          <div style="margin:4px 0;font-size:11px">${weatherLabel}</div>
-          <div style="color:var(--warn);font-weight:700">${precipLabel}</div>
+          <div style="font-weight:700;color:var(--text);margin-bottom:3px;font-size:10px">${hourLabel}</div>
+          <div style="font-size:13px;font-weight:800;color:var(--accent2);margin-bottom:2px">${tempLabel}</div>
+          <div style="margin:2px 0;font-size:10px">${weatherLabel}</div>
+          <div style="color:var(--warn);font-weight:700;font-size:10px">${precipLabel}</div>
         `;
 
         container.appendChild(card);
